@@ -1333,7 +1333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce1d4d3e160ec0e4288ee6e0d783cedc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnRate: 5
+  spawnRate: 1
   difficultyMultiplier: 1
   enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
   hotPoints:
@@ -1357,6 +1357,7 @@ MonoBehaviour:
     e2: {fileID: 568050598}
     e3: {fileID: 1837660340}
     eEnemy: {fileID: 791379748}
+  timeBetweenRounds: 10
 --- !u!1 &2127081634
 GameObject:
   m_ObjectHideFlags: 0
