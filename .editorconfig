@@ -1,0 +1,10 @@
+[*.cs]
+# Indentation style and size
+indent_style = space
+indent_size = 4
+
+# Require braces to be on the same line as the declaration
+csharp_new_line_before_open_brace = none
+
+# Ensure there’s a single space before the open brace
+csharp_space_before_open_brace = true
