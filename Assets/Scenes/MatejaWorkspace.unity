@@ -239,8 +239,9 @@ MonoBehaviour:
   enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
   baseEnemiesToSpawn: 2
   enemySpawnPoints: []
-  turretPlacePoints: []
   enemies: []
+  turretPlacePoints: []
+  turrets: []
   timeBetweenRounds: 10
   numberOfRounds: 0
   roundActive: 0
@@ -541,7 +542,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &524951043
 Transform:
   m_ObjectHideFlags: 0
@@ -655,6 +656,67 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1785451472}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!1001 &676045930
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -14.038
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.256
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 699334232300636712, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_Name
+      value: Turret (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 699334232300636712, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
 --- !u!1 &721026269
 GameObject:
   m_ObjectHideFlags: 0
@@ -670,7 +732,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &721026270
 Transform:
   m_ObjectHideFlags: 0
@@ -887,7 +949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1458733226
 Transform:
   m_ObjectHideFlags: 0
@@ -1011,7 +1073,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1739276517
 Transform:
   m_ObjectHideFlags: 0
@@ -1344,6 +1406,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -792728106043502592, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
+      propertyPath: hitPoints
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 336509822709452529, guid: d32db33f49b9cf94eab39c5a182415dc, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.38
@@ -1404,3 +1470,4 @@ SceneRoots:
   - {fileID: 1785451472}
   - {fileID: 615327297}
   - {fileID: 667111201033935270}
+  - {fileID: 676045930}

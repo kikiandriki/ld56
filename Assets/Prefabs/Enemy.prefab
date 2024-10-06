@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 552223198173754866}
   - component: {fileID: 3664703947103846507}
   - component: {fileID: 7978305860465781730}
-  - component: {fileID: 2671921143349854732}
+  - component: {fileID: 5546132537528326636}
   m_Layer: 7
   m_Name: Enemy
   m_TagString: Enemy
@@ -99,9 +99,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c17cdb4b6cd5d2047b48199eaf947245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveTarget: {fileID: 0}
   moveSpeed: 2
   shouldMove: 1
-  attackRange: 2
+  hitPoints: 1000
+  attackRange: 0.7
+  attackDamage: 10
+  attackSpeed: 1
   ignoreLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -114,7 +118,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 548639906743090273}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: b333622ecd4134549a4869e7c2db835d, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -139,17 +143,31 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
---- !u!114 &2671921143349854732
-MonoBehaviour:
+  m_Radius: 0.3
+--- !u!50 &5546132537528326636
+Rigidbody2D:
+  serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 548639906743090273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48ff7ec56eeb90142beed9c0d08208c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitPoints: 20
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 6200000, guid: b333622ecd4134549a4869e7c2db835d, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

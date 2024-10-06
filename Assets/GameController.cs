@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour {
     [Tooltip("Should the game auto start? Debug.")]
     private bool autoStartGame = false;
 
-    [Header("Spawning Settings")]
+    [Header("Enemy Settings")]
     [SerializeField]
     [Tooltip("How many seconds between spawn.")]
     private float spawnRate = 1f;
@@ -30,12 +30,18 @@ public class GameController : MonoBehaviour {
     private Transform[] enemySpawnPoints;
     [ReadOnly]
     [SerializeField]
+    [Tooltip("Enemies that have been spawned.")]
+    private List<GameObject> enemies;
+
+    [Header("Turret Settings")]
+    [ReadOnly]
+    [SerializeField]
     [Tooltip("Locations where turrets can be placed.")]
     private Transform[] turretPlacePoints;
     [ReadOnly]
     [SerializeField]
-    [Tooltip("Enemies that have been spawned.")]
-    private List<GameObject> enemies;
+    [Tooltip("Turrets that have been placed.")]
+    private List<GameObject> turrets;
 
     [Header("Round Settings")]
     [SerializeField]
@@ -123,13 +129,25 @@ public class GameController : MonoBehaviour {
         // Pick a random spawn point.
         int randomIndex = Random.Range(0, enemySpawnPoints.Length);
         Transform randomSpawn = enemySpawnPoints[randomIndex];
+        Vector3 offset = new(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0);
+        randomSpawn.position += offset;
         // Create the new enemy.
         GameObject newEnemy = Instantiate(enemyPrefab, randomSpawn.position, randomSpawn.rotation);
         enemies.Add(newEnemy);
+        newEnemy.GetComponent<EnemyBehavior>().Terrorize(randomSpawn);
     }
 
     public void DestroyEnemy(GameObject enemy) {
         enemies.Remove(enemy);
         Destroy(enemy);
+    }
+
+    public void SpawnTurret() {
+        Debug.LogError("Spawning turret not implemented.");
+    }
+
+    public void DestroyTurret(GameObject turret) {
+        turrets.Remove(turret);
+        Destroy(turret);
     }
 }
