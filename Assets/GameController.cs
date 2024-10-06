@@ -2,48 +2,11 @@ using System.Collections;
 using UnityEngine;
 
 
-[System.Serializable]
-public class HotPoints {
-    public Transform a1;
-    public Transform a2;
-    public Transform a3;
-    public Transform aEnemy;
-
-    public Transform b1;
-    public Transform b2;
-    public Transform b3;
-    public Transform bEnemy;
-
-    public Transform c1;
-    public Transform c2;
-    public Transform c3;
-    public Transform cEnemy;
-
-    public Transform d1;
-    public Transform d2;
-    public Transform d3;
-    public Transform dEnemy;
-
-    public Transform e1;
-    public Transform e2;
-    public Transform e3;
-    public Transform eEnemy;
-
-    public Transform[] EnemySpawns {
-        get {
-            return new Transform[] {
-                aEnemy,
-                bEnemy,
-                cEnemy,
-                dEnemy,
-                eEnemy
-            };
-        }
-    }
-}
-
-
 public class GameController : MonoBehaviour {
+
+    [SerializeField]
+    [Tooltip("Should the game auto start? Debug.")]
+    private bool autoStartGame = false;
 
     [Header("Spawning Settings")]
     [SerializeField]
@@ -59,7 +22,11 @@ public class GameController : MonoBehaviour {
     [Tooltip("Base amount of enemies to spawn in a round.")]
     private int baseEnemiesToSpawn = 2;
     [SerializeField]
-    private HotPoints hotPoints;
+    [Tooltip("Locations where enemies can spawn from.")]
+    private Transform[] enemySpawnPoints;
+    [SerializeField]
+    [Tooltip("Locations where turrets can be placed.")]
+    private Transform[] turretPlacePoints;
 
     [Header("Round Settings")]
     [SerializeField]
@@ -77,7 +44,9 @@ public class GameController : MonoBehaviour {
 
     void Start() {
         // Start the game immediately.
-        StartCoroutine(StartGame());
+        if (autoStartGame) {
+            StartCoroutine(StartGame());
+        }
     }
 
     public void EndRound() {
@@ -113,7 +82,6 @@ public class GameController : MonoBehaviour {
                 difficultyMultiplier += currentRound * 0.2f;
             }
         }
-
     }
 
     IEnumerator StartRound() {
@@ -132,8 +100,8 @@ public class GameController : MonoBehaviour {
 
     void SpawnEnemy() {
         // Pick a random spawn point.
-        int randomIndex = Random.Range(0, hotPoints.EnemySpawns.Length);
-        Transform randomSpawn = hotPoints.EnemySpawns[randomIndex];
+        int randomIndex = Random.Range(0, enemySpawnPoints.Length);
+        Transform randomSpawn = enemySpawnPoints[randomIndex];
         // Create the new enemy.
         GameObject newEnemy = Instantiate(enemyPrefab, randomSpawn.position, randomSpawn.rotation);
     }
