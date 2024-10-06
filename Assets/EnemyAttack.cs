@@ -26,7 +26,7 @@ public class EnemyAttack : MonoBehaviour {
             float enemyToNexus = Vector2.Distance(transform.position, nexus.position);
             float towerToNexus = Vector2.Distance(other.transform.position, nexus.position);
             if (enemyToNexus > towerToNexus) {
-                enemyMovement.shouldMove = false;
+                // enemyMovement.shouldMove = false;
                 // Attack continuously.
                 TurretHealth th = other.GetComponent<TurretHealth>();
                 StartCoroutine(Attack(th));
@@ -35,16 +35,16 @@ public class EnemyAttack : MonoBehaviour {
     }
 
     IEnumerator Attack(TurretHealth th) {
-        while (!enemyMovement.shouldMove) {
-            th.TakeDamage(damage);
-            yield return new WaitForSeconds(attackSpeed);
-        }
+        // while (!enemyMovement.shouldMove) {
+        // th.TakeDamage(damage);
+        yield return new WaitForSeconds(attackSpeed);
+        // }
     }
 
     void OnTriggerExit2D(Collider2D other) {
         Debug.Log("Exit", other.gameObject);
         if (other.gameObject.CompareTag("Turret")) {
-            enemyMovement.shouldMove = true;
+            // enemyMovement.shouldMove = true;
         }
     }
 }
