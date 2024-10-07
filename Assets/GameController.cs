@@ -2,6 +2,7 @@ using System.Linq;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 
 public class GameController : MonoBehaviour {
@@ -50,7 +51,13 @@ public class GameController : MonoBehaviour {
     [Tooltip("Whether or not to automatically end the round when the last enemy has spawned.")]
     private bool autoEndRound = true;
 
+    TextMeshPro waveNumber;
+    SceneGuy sg;
+
     void Start() {
+        waveNumber = GameObject.FindWithTag("WaveNumber").GetComponent<TextMeshPro>();
+        sg = GameObject.FindWithTag("SceneGuy").GetComponent<SceneGuy>();
+
         // Create the spawn point map.
         enemySpawnPointMap = new Dictionary<SpawnPointID, Transform> {
             { SpawnPointID.SpawnPoint1, enemySpawnPoints[0] },
@@ -68,6 +75,10 @@ public class GameController : MonoBehaviour {
         if (autoStartGame) {
             StartCoroutine(StartGame());
         }
+    }
+
+    void Update() {
+        waveNumber.text = "Round " + (currentRound + 1);
     }
 
     public void EndRound() {
@@ -98,6 +109,7 @@ public class GameController : MonoBehaviour {
                 yield return new WaitForSeconds(timeBetweenRounds);
             }
         }
+        sg.LoadWin();
     }
 
     IEnumerator StartRound() {

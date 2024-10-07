@@ -9,6 +9,8 @@ TagManager:
   - Enemy
   - EnemySpawnPoint
   - TurretPlacePoint
+  - WaveNumber
+  - SceneGuy
   layers:
   - Default
   - TransparentFX
