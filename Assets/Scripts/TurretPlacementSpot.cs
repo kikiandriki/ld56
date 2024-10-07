@@ -9,7 +9,7 @@ public class TurretPlacementSpot : MonoBehaviour {
 
     public void SetOccupied(bool occupied) {
         isOccupied = occupied;
-        if (occupied) {
+        if (isOccupied) {
             Debug.Log($"Spot occupied: {gameObject.name}"); // Logging when a spot is occupied
 
         }else {
@@ -17,4 +17,6 @@ public class TurretPlacementSpot : MonoBehaviour {
 
         }
     }
+
+   
 }
