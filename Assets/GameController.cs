@@ -134,7 +134,6 @@ public class GameController : MonoBehaviour {
         // Create the new enemy.
         GameObject newEnemy = Instantiate(enemyPrefab, randomSpawn.position, randomSpawn.rotation);
         enemies.Add(newEnemy);
-        newEnemy.GetComponent<EnemyBehavior>().Terrorize(randomSpawn);
     }
 
     public void DestroyEnemy(GameObject enemy) {

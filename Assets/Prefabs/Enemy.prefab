@@ -99,16 +99,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c17cdb4b6cd5d2047b48199eaf947245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentState: IDLE
   moveTarget: {fileID: 0}
   moveSpeed: 2
-  shouldMove: 1
   hitPoints: 1000
+  visionRange: 4
   attackRange: 0.7
-  attackDamage: 10
-  attackSpeed: 1
-  ignoreLayer:
+  attackDamage: 2000
+  attackSpeed: 0.1
+  canAttack: 1
+  targetLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 256
 --- !u!58 &7978305860465781730
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -143,7 +145,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.5
 --- !u!50 &5546132537528326636
 Rigidbody2D:
   serializedVersion: 4

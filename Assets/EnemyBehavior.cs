@@ -4,8 +4,10 @@ using UnityEngine;
 public class EnemyBehavior : MonoBehaviour, IDamageable {
 
     private Transform nexus;
-    private Transform originPoint;
-    private bool spawned = false;
+
+    [ReadOnly]
+    [SerializeField]
+    private string currentState = "IDLE";
 
     [Header("Movement")]
     [ReadOnly]
@@ -15,10 +17,6 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     [SerializeField]
     [Tooltip("How fast can this enemy move.")]
     private float moveSpeed = 5f;
-    [ReadOnly]
-    [SerializeField]
-    [Tooltip("Whether or not this enemy should be moving.")]
-    private bool shouldMove = true;
 
     [Header("Health")]
     [SerializeField]
@@ -26,6 +24,9 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     private int hitPoints = 20;
 
     [Header("Attacking")]
+    [SerializeField]
+    [Tooltip("Vision range.")]
+    private float visionRange = 4f;
     [SerializeField]
     [Tooltip("Attack range.")]
     private float attackRange = 2f;
@@ -37,19 +38,18 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     private float attackSpeed = 1f;
     [ReadOnly]
     [SerializeField]
+    [Tooltip("Whether or not this entity can attack.")]
+    private bool canAttack = true;
+    [ReadOnly]
+    [SerializeField]
     [Tooltip("The target that this enemy is attacking.")]
     private IDamageable attackTarget;
     [SerializeField]
-    [Tooltip("Layers to ignore when checking for attacks.")]
-    private LayerMask ignoreLayer;
+    [Tooltip("Layers to target when checking for attacks.")]
+    private LayerMask targetLayer;
 
     void Start() {
         nexus = GameObject.FindWithTag("Nexus").transform;
-    }
-
-    public void Terrorize(Transform origin) {
-        originPoint = origin;
-        spawned = true;
     }
 
     public bool TakeDamage(int damage) {
@@ -62,7 +62,6 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     }
 
     public void Die() {
-        StopAttacking();
         StopAllCoroutines();
         GameController controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
         if (controller) {
@@ -70,67 +69,84 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
         }
     }
 
-    public void StopAttacking() {
-        // Stop attacking.
-        attackTarget = null;
-        // Start moving.
-        shouldMove = true;
-    }
+    public void Attack(IDamageable target) {
+        // Check that we're in range and attack is not on cooldown.
+        MonoBehaviour dob = target as MonoBehaviour;
 
-    public void StartAttacking(IDamageable target) {
-        // Set the target.
-        attackTarget = target;
-        // Stop moving.
-        shouldMove = false;
-        // Start attacking.
-        StartCoroutine(Attack());
-    }
+        Vector3 direction = (dob.transform.position - transform.position).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, attackRange, targetLayer);
+        Debug.DrawRay(transform.position, direction * attackRange, Color.yellow);
 
-    IEnumerator Attack() {
-        // As long as we have a target...
-        while (attackTarget != null && !attackTarget.Equals(null)) {
+        if (canAttack && hit.collider && dob.gameObject.Equals(hit.collider.gameObject)) {
             // Deal damage.
-            attackTarget.TakeDamage(attackDamage);
-            // Wait for attack speed cooldown.
-            yield return new WaitForSeconds(attackSpeed);
+            target.TakeDamage(attackDamage);
+            // Start attack cooldown.
+            StartCoroutine(AttackCooldown());
         }
-        shouldMove = true;
+    }
+
+    IEnumerator AttackCooldown() {
+        canAttack = false;
+        yield return new WaitForSeconds(attackSpeed);
+        canAttack = true;
+    }
+
+
+    /**
+
+    Enemy behavior
+
+    - Default state
+        Run at nexus
+    
+    - Target in vision
+        Run at target
+    
+    - Target in attack range
+        Attack target
+
+     */
+
+    void DrawDebugCircle(Vector3 center, float radius, Color color) {
+        int segments = 40; // Higher values make a smoother circle
+        float angleStep = 360f / segments;
+
+        for (int i = 0; i <= segments; i++) {
+            float angle = i * angleStep * Mathf.Deg2Rad;
+            float nextAngle = (i + 1) * angleStep * Mathf.Deg2Rad;
+
+            Vector3 pointA = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius + center;
+            Vector3 pointB = new Vector3(Mathf.Cos(nextAngle), Mathf.Sin(nextAngle), 0) * radius + center;
+
+            Debug.DrawLine(pointA, pointB, color);
+        }
     }
 
     void Update() {
-        // If we should be moving...
-        if (shouldMove && spawned) {
-            // If we haven't reached the end of the lane...
-            if (transform.position != nexus.position) {
-                // Calculate the direction to the nexus.
-                Vector3 direction = (nexus.position - transform.position).normalized;
 
-                // Determine the target to hit.
-                RaycastHit2D h1 = Physics2D.Raycast(originPoint.position, direction, Mathf.Infinity, ~ignoreLayer);
-                Debug.DrawRay(originPoint.position, direction * 1000, Color.yellow);
-                if (h1.collider) {
-                    if (h1.collider.TryGetComponent<IDamageable>(out var damageable)) {
-                        moveTarget = h1.transform;
-                    }
-                }
+        DrawDebugCircle(transform.position, attackRange, Color.red);
+        DrawDebugCircle(transform.position, visionRange, Color.blue);
 
-                if (!moveTarget.Equals(null)) {
-                    // Move towards the target.
-                    transform.position = Vector3.MoveTowards(transform.position, moveTarget.position, moveSpeed * Time.deltaTime);
-                    // Cast a ray to determine if anything is in attack range.
-                    RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, attackRange, ~ignoreLayer);
-                    Debug.DrawRay(transform.position, direction * attackRange, Color.red);
-                    // If something is in our range...
-                    if (hit.collider != null) {
-                        Debug.Log("Enemy Hit: " + hit.collider.name);
-                        // If the target is damageable...
-                        if (hit.collider.TryGetComponent<IDamageable>(out var damageable)) {
-                            // Start attacking.
-                            StartAttacking(damageable);
-                        }
-                    }
-                }
+        // If there is a target in attack range.
+        if (Physics2D.OverlapCircle(transform.position, attackRange, targetLayer) is Collider2D targetInAttackRange) {
+            // If the target is damageable.
+            if (targetInAttackRange.GetComponent<IDamageable>() is IDamageable damageable) {
+                currentState = "ATTACKING";
+                // Attack the target.
+                Attack(damageable);
             }
+        }
+        // If there is a target in vision.
+        else if (Physics2D.OverlapCircle(transform.position, visionRange, targetLayer) is Collider2D targetInVision) {
+            currentState = "MOVING TO TARGET";
+            // Move towards the target.
+            transform.position = Vector3.MoveTowards(transform.position, targetInVision.transform.position, moveSpeed * Time.deltaTime);
+        }
+        // Default state.
+        else {
+            currentState = "MOVING TO NEXUS";
+            // Move towards the nexus.
+            transform.position = Vector3.MoveTowards(transform.position, nexus.position, moveSpeed * Time.deltaTime);
         }
     }
 }
