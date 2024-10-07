@@ -8,7 +8,7 @@ public class AcornDrop : MonoBehaviour {
     [SerializeField]
     private float arcHeight = 1f; // Height of the arc
     [SerializeField]
-    private float arcDuration = 1f; // How long the arc lasts before the acorn stops
+    private float arcDuration = 1.5f; // How long the arc lasts before the acorn stops
     [SerializeField]
     private float gravity = -9.8f; // Simulated gravity force
 
@@ -31,8 +31,8 @@ public class AcornDrop : MonoBehaviour {
 
         // Set initial random direction for the arc
         startPosition = transform.position;
-        float randomX = Random.Range(-2f, 2f); // Random horizontal direction
-        float randomZ = Random.Range(-2f, 2f); // Random horizontal direction
+        float randomX = Random.Range(-1f, 1f); // Random horizontal direction
+        float randomZ = Random.Range(-1f, 1f); // Random horizontal direction
 
         targetPosition = startPosition + new Vector3(randomX, 0, randomZ); // Where the acorn should land
 
@@ -74,6 +74,6 @@ public class AcornDrop : MonoBehaviour {
 
         // Once landed, stop the movement
         isLanded = true;
-        transform.position = new Vector3(transform.position.x, targetPosition.y, transform.position.z); // Snap to ground level
+       // transform.position = new Vector3(transform.position.x, targetPosition.y, transform.position.z); // Snap to ground level
     }
 }
