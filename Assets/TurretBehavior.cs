@@ -1,15 +1,24 @@
 using System.Collections;
-using System.Security.Cryptography;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class TurretBehavior : MonoBehaviour, IDamageable {
 
     private Transform nexus;
+    public LayerMask placementLayerMask;  // Layer for turret placement points
+
 
     [Header("Health")]
     [SerializeField]
     [Tooltip("How many hit points does this enemy have?")]
     private int hitPoints = 20;
+    [SerializeField]
+    [Tooltip("Where should damage indicators spawn.")]
+    private Transform damageIndicatorSpawn;
+    [SerializeField]
+    [Tooltip("Prefab for damage indicator.")]
+    private GameObject damageIndicatorPrefab;
 
     [Header("Attacking")]
     [SerializeField]
@@ -41,7 +50,22 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
     }
 
     public bool TakeDamage(int damage) {
+        // Already dead.
+        if (gameObject.layer == 9) return true;
+
         hitPoints -= damage;
+
+        GameObject damageIndicator = Instantiate(
+            damageIndicatorPrefab,
+            damageIndicatorSpawn.position,
+            damageIndicatorSpawn.rotation,
+            damageIndicatorSpawn
+        );
+
+        if (damageIndicator.GetComponent<DamageIndicatorBehavior>() is DamageIndicatorBehavior dib) {
+            dib.SetText("-" + damage);
+        }
+
         if (hitPoints <= 0) {
             Die();
             return true;
@@ -50,7 +74,21 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
     }
 
     public void Die() {
-        StopAllCoroutines();
+        gameObject.layer = 9;
+        StartCoroutine(DeathAnimation());
+
+        Collider2D hitCollider = Physics2D.OverlapPoint(transform.position, placementLayerMask);
+        if (hitCollider != null) {
+            hitCollider.GetComponent<TurretPlacementSpot>().SetOccupied(true);
+        }
+
+    }
+
+    IEnumerator DeathAnimation() {
+        yield return new WaitForSeconds(1f);
+
+
+        // TODO: animate death.
         GameController controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
         if (controller) {
             controller.DestroyTurret(gameObject);
@@ -103,8 +141,14 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
     void Update() {
         DrawDebugCircle(transform.position, attackRange, Color.red);
 
+        Collider2D[] targetsInAttackRange = Physics2D.OverlapCircleAll(transform.position, attackRange, targetLayer);
+
         // If there is a target in attack range.
-        if (Physics2D.OverlapCircle(transform.position, attackRange, targetLayer) is Collider2D targetInAttackRange) {
+        if (targetsInAttackRange != null && targetsInAttackRange.Length > 0) {
+
+            // Prioritize the target closest to the nexus.
+            Collider2D targetInAttackRange = targetsInAttackRange.OrderBy(collider => Vector2.Distance(collider.transform.position, nexus.position)).FirstOrDefault();
+
             // If the target is damageable.
             if (targetInAttackRange.GetComponent<IDamageable>() is IDamageable damageable) {
                 // Attack the target.

@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class EnemyBehavior : MonoBehaviour, IDamageable {
@@ -13,11 +15,21 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     [SerializeField]
     [Tooltip("How fast can this enemy move.")]
     private float moveSpeed = 5f;
+    [ReadOnly]
+    [SerializeField]
+    [Tooltip("Is the enemy incapable of doing anything?")]
+    private bool frozen = false;
 
     [Header("Health")]
     [SerializeField]
     [Tooltip("How many hit points does this enemy have?")]
     private int hitPoints = 20;
+    [SerializeField]
+    [Tooltip("Where should damage indicators spawn.")]
+    private Transform damageIndicatorSpawn;
+    [SerializeField]
+    [Tooltip("Prefab for damage indicator.")]
+    private GameObject damageIndicatorPrefab;
 
     [Header("Attacking")]
     [SerializeField]
@@ -45,7 +57,22 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     }
 
     public bool TakeDamage(int damage) {
+        // Already dead.
+        if (gameObject.layer == 9) return true;
+
         hitPoints -= damage;
+
+        GameObject damageIndicator = Instantiate(
+            damageIndicatorPrefab,
+            damageIndicatorSpawn.position,
+            damageIndicatorSpawn.rotation,
+            damageIndicatorSpawn
+        );
+
+        if (damageIndicator.GetComponent<DamageIndicatorBehavior>() is DamageIndicatorBehavior dib) {
+            dib.SetText("-" + damage);
+        }
+
         if (hitPoints <= 0) {
             Die();
             return true;
@@ -54,7 +81,14 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     }
 
     public void Die() {
-        StopAllCoroutines();
+        frozen = true;
+        gameObject.layer = 9;
+        StartCoroutine(DeathAnimation());
+    }
+
+    IEnumerator DeathAnimation() {
+        yield return new WaitForSeconds(1f);
+        // TODO: animate death.
         GameController controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
         if (controller) {
             controller.DestroyEnemy(gameObject);
@@ -115,12 +149,19 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     }
 
     void Update() {
+        if (frozen) return;
 
         DrawDebugCircle(transform.position, attackRange, Color.red);
         DrawDebugCircle(transform.position, visionRange, Color.blue);
+        Collider2D[] targetsInAttackRange = Physics2D.OverlapCircleAll(transform.position, attackRange, targetLayer);
+        Collider2D[] targetsInVision = Physics2D.OverlapCircleAll(transform.position, visionRange, targetLayer);
 
         // If there is a target in attack range.
-        if (Physics2D.OverlapCircle(transform.position, attackRange, targetLayer) is Collider2D targetInAttackRange) {
+        if (targetsInAttackRange != null && targetsInAttackRange.Length > 0) {
+
+            // Prioritize the target closes to this entity.
+            Collider2D targetInAttackRange = targetsInAttackRange.OrderBy(collider => Vector2.Distance(collider.transform.position, transform.position)).FirstOrDefault();
+
             // If the target is damageable.
             if (targetInAttackRange.GetComponent<IDamageable>() is IDamageable damageable) {
                 // Attack the target.
@@ -128,7 +169,10 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
             }
         }
         // If there is a target in vision.
-        else if (Physics2D.OverlapCircle(transform.position, visionRange, targetLayer) is Collider2D targetInVision) {
+        else if (targetsInVision != null && targetsInVision.Length > 0) {
+            // Prioritize the target closes to this entity.
+            Collider2D targetInVision = targetsInVision.OrderBy(collider => Vector2.Distance(collider.transform.position, transform.position)).FirstOrDefault();
+
             // Move towards the target.
             transform.position = Vector3.MoveTowards(transform.position, targetInVision.transform.position, moveSpeed * Time.deltaTime);
         }
