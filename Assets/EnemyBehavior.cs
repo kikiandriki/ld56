@@ -5,10 +5,6 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
 
     private Transform nexus;
 
-    [ReadOnly]
-    [SerializeField]
-    private string currentState = "IDLE";
-
     [Header("Movement")]
     [ReadOnly]
     [SerializeField]
@@ -131,20 +127,17 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
         if (Physics2D.OverlapCircle(transform.position, attackRange, targetLayer) is Collider2D targetInAttackRange) {
             // If the target is damageable.
             if (targetInAttackRange.GetComponent<IDamageable>() is IDamageable damageable) {
-                currentState = "ATTACKING";
                 // Attack the target.
                 Attack(damageable);
             }
         }
         // If there is a target in vision.
         else if (Physics2D.OverlapCircle(transform.position, visionRange, targetLayer) is Collider2D targetInVision) {
-            currentState = "MOVING TO TARGET";
             // Move towards the target.
             transform.position = Vector3.MoveTowards(transform.position, targetInVision.transform.position, moveSpeed * Time.deltaTime);
         }
         // Default state.
         else {
-            currentState = "MOVING TO NEXUS";
             // Move towards the nexus.
             transform.position = Vector3.MoveTowards(transform.position, nexus.position, moveSpeed * Time.deltaTime);
         }
