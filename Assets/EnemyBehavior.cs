@@ -3,9 +3,11 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(Animator))]
 public class EnemyBehavior : MonoBehaviour, IDamageable {
 
     private Transform nexus;
+    private Animator animator;
 
     [Header("Movement")]
     [ReadOnly]
@@ -53,6 +55,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     private LayerMask targetLayer;
 
     void Start() {
+        animator = gameObject.GetComponent<Animator>();
         nexus = GameObject.FindWithTag("Nexus").transform;
     }
 
@@ -68,6 +71,8 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
             damageIndicatorSpawn.rotation,
             damageIndicatorSpawn
         );
+
+        animator.SetTrigger("Hurt");
 
         if (damageIndicator.GetComponent<DamageIndicatorBehavior>() is DamageIndicatorBehavior dib) {
             dib.SetText("-" + damage);
@@ -87,6 +92,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     }
 
     IEnumerator DeathAnimation() {
+        animator.SetBool("Dead", true);
         yield return new WaitForSeconds(1f);
         // TODO: animate death.
         GameController controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
@@ -104,6 +110,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
         Debug.DrawRay(transform.position, direction * attackRange, Color.yellow);
 
         if (canAttack && hit.collider && dob.gameObject.Equals(hit.collider.gameObject)) {
+            animator.SetTrigger("Attack");
             // Deal damage.
             target.TakeDamage(attackDamage);
             // Start attack cooldown.
@@ -158,6 +165,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
 
         // If there is a target in attack range.
         if (targetsInAttackRange != null && targetsInAttackRange.Length > 0) {
+            animator.SetBool("Walking", false);
 
             // Prioritize the target closes to this entity.
             Collider2D targetInAttackRange = targetsInAttackRange.OrderBy(collider => Vector2.Distance(collider.transform.position, transform.position)).FirstOrDefault();
@@ -170,6 +178,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
         }
         // If there is a target in vision.
         else if (targetsInVision != null && targetsInVision.Length > 0) {
+            animator.SetBool("Walking", true);
             // Prioritize the target closes to this entity.
             Collider2D targetInVision = targetsInVision.OrderBy(collider => Vector2.Distance(collider.transform.position, transform.position)).FirstOrDefault();
 
@@ -178,6 +187,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
         }
         // Default state.
         else {
+            animator.SetBool("Walking", true);
             // Move towards the nexus.
             transform.position = Vector3.MoveTowards(transform.position, nexus.position, moveSpeed * Time.deltaTime);
         }
