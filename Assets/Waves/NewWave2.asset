@@ -12,4 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 244028b106aa228468c903dfdeb08825, type: 3}
   m_Name: NewWave2
   m_EditorClassIdentifier: 
-  enemyWaves: []
+  enemyWaves:
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 0
+    spawnDelay: 0
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 1
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 2
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 3
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 4
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 4
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 3
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 2
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 0
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 0
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 1
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 2
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 3
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 4
+    spawnDelay: 0.2
+  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+    spawnPointID: 4
+    spawnDelay: 0.2
