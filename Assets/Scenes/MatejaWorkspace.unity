@@ -295,16 +295,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoStartGame: 1
-  spawnRate: 1
-  difficultyMultiplier: 1
-  enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
-  baseEnemiesToSpawn: 2
-  enemySpawnPoints: []
+  waves:
+  - {fileID: 11400000, guid: f38ff3e8b87bbaa4e80ba38ec8cca042, type: 2}
+  - {fileID: 11400000, guid: 554d59b9c8be1364d9873bc0713fca44, type: 2}
+  enemySpawnPoints:
+  - {fileID: 631137137}
+  - {fileID: 1739276517}
+  - {fileID: 721026270}
+  - {fileID: 524951043}
+  - {fileID: 1458733226}
   enemies: []
   turretPlacePoints: []
   turrets: []
+  currentRound: 0
   timeBetweenRounds: 10
-  numberOfRounds: 0
   roundActive: 0
   autoEndRound: 0
 --- !u!4 &200142767
@@ -364,7 +368,8 @@ GameObject:
   - component: {fileID: 324143846}
   - component: {fileID: 324143845}
   - component: {fileID: 324143847}
-  m_Layer: 0
+  - component: {fileID: 324143848}
+  m_Layer: 8
   m_Name: Nexus
   m_TagString: Nexus
   m_Icon: {fileID: 0}
@@ -435,7 +440,8 @@ Transform:
   m_LocalPosition: {x: 0, y: -6.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1715108771}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &324143847
@@ -473,6 +479,29 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!114 &324143848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324143844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dde7fc8e6994378408557b715900eb43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitPoints: 2000
+  damageIndicatorSpawn: {fileID: 1715108771}
+  damageIndicatorPrefab: {fileID: 1915260226288102098, guid: 77d66618f08837b47895a60ad055b08e, type: 3}
+  attackRange: 2
+  attackDamage: 10
+  attackSpeed: 1
+  canAttack: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  projectilePrefab: {fileID: 5997211900346718176, guid: c758b826446b7634fa06985c43e428a7, type: 3}
 --- !u!1 &456173320
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,7 +632,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &524951043
 Transform:
   m_ObjectHideFlags: 0
@@ -732,7 +761,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &721026270
 Transform:
   m_ObjectHideFlags: 0
@@ -949,7 +978,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1458733226
 Transform:
   m_ObjectHideFlags: 0
@@ -1058,6 +1087,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1785451472}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+--- !u!1 &1715108770
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1715108771}
+  m_Layer: 8
+  m_Name: IndicatorSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1715108771
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1715108770}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 324143846}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1739276516
 GameObject:
   m_ObjectHideFlags: 0
@@ -1073,7 +1133,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1739276517
 Transform:
   m_ObjectHideFlags: 0

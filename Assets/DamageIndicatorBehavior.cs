@@ -26,6 +26,9 @@ public class DamageIndicatorBehavior : MonoBehaviour {
 
     void Awake() {
         tmp = gameObject.GetComponent<TextMeshPro>();
+        Renderer r = tmp.GetComponent<Renderer>();
+        r.sortingLayerName = "Indicators";
+        r.sortingOrder = 10;
         initialOpacity = tmp.alpha;
         initialY = transform.localPosition.y;
         desiredY = initialY + desiredLift;

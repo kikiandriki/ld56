@@ -12,19 +12,8 @@ public class GameController : MonoBehaviour {
 
     [Header("Enemy Settings")]
     [SerializeField]
-    [Tooltip("How many seconds between spawn.")]
-    private float spawnRate = 1f;
-    [ReadOnly]
-    [SerializeField]
-    [Tooltip("Multiplier of spawn frequency, for stage difficulty.")]
-    private float difficultyMultiplier = 1f;
-    [SerializeField]
-    [Tooltip("Enemy to spawn.")]
-    private GameObject enemyPrefab;
-    [SerializeField]
-    [Tooltip("Base amount of enemies to spawn in a round.")]
-    private int baseEnemiesToSpawn = 2;
-    [ReadOnly]
+    [Tooltip("Waves to spawn.")]
+    private Wave[] waves;
     [SerializeField]
     [Tooltip("Locations where enemies can spawn from.")]
     private Transform[] enemySpawnPoints;
@@ -32,6 +21,8 @@ public class GameController : MonoBehaviour {
     [SerializeField]
     [Tooltip("Enemies that have been spawned.")]
     private List<GameObject> enemies;
+    // Map for IDs to spawn points.
+    private Dictionary<SpawnPointID, Transform> enemySpawnPointMap;
 
     [Header("Turret Settings")]
     [ReadOnly]
@@ -44,12 +35,13 @@ public class GameController : MonoBehaviour {
     private List<GameObject> turrets;
 
     [Header("Round Settings")]
+    [ReadOnly]
+    [SerializeField]
+    [Tooltip("The current round being played.")]
+    private int currentRound = 0;
     [SerializeField]
     [Tooltip("How much time to wait between rounds.")]
     private float timeBetweenRounds = 10f;
-    [SerializeField]
-    [Tooltip("How many rounds will be played. 0 for infinite.")]
-    private int numberOfRounds = 0;
     [ReadOnly]
     [SerializeField]
     [Tooltip("Whether or not a round is currently active.")]
@@ -58,18 +50,20 @@ public class GameController : MonoBehaviour {
     [Tooltip("Whether or not to automatically end the round when the last enemy has spawned.")]
     private bool autoEndRound = true;
 
-    public void SetDifficultyMultiplier(float multiplier) {
-        difficultyMultiplier = multiplier;
-    }
-
     void Start() {
-        // Find all enemy spawn points.
-        GameObject[] spawnsObjects = GameObject.FindGameObjectsWithTag("EnemySpawnPoint");
-        enemySpawnPoints = spawnsObjects.Select(o => o.transform).ToArray();
-        enemies = new List<GameObject>();
+        // Create the spawn point map.
+        enemySpawnPointMap = new Dictionary<SpawnPointID, Transform> {
+            { SpawnPointID.SpawnPoint1, enemySpawnPoints[0] },
+            { SpawnPointID.SpawnPoint2, enemySpawnPoints[1] },
+            { SpawnPointID.SpawnPoint3, enemySpawnPoints[2] },
+            { SpawnPointID.SpawnPoint4, enemySpawnPoints[3] },
+            { SpawnPointID.SpawnPoint5, enemySpawnPoints[4] }
+        };
+
         // Find all turret place points.
         GameObject[] turretPlaceObjects = GameObject.FindGameObjectsWithTag("TurretPlacePoint");
         turretPlacePoints = turretPlaceObjects.Select(o => o.transform).ToArray();
+
         // Start the game immediately.
         if (autoStartGame) {
             StartCoroutine(StartGame());
@@ -88,51 +82,48 @@ public class GameController : MonoBehaviour {
     }
 
     IEnumerator StartGame() {
-
-        bool doNextRound = true;
-        int currentRound = 1;
-
-        while (doNextRound) {
+        Debug.Log("Starting game");
+        while (currentRound < waves.Length) {
             // Start a round.
             yield return StartCoroutine(StartRound());
             if (autoEndRound) EndRound();
+            Debug.Log("Waiting for round to end...");
             // Wait for the round to fully end.
             yield return StartCoroutine(WaitForRoundToEnd());
             // Increment the round counter.
             currentRound++;
-            // Check if we should run another round.
-            doNextRound = numberOfRounds < 1 || currentRound <= numberOfRounds;
-            if (doNextRound) {
+            if (currentRound < waves.Length) {
                 // Wait for post round timer.
+                Debug.Log("Waiting for post round timer...");
                 yield return new WaitForSeconds(timeBetweenRounds);
-                // Increase the difficulty multiplier.
-                difficultyMultiplier += currentRound * 0.2f;
             }
         }
     }
 
     IEnumerator StartRound() {
+        Debug.Log("Round " + (currentRound + 1) + " commencing");
         roundActive = true;
 
-        int enemiesToSpawn = Mathf.RoundToInt(baseEnemiesToSpawn * difficultyMultiplier);
+        // Choose the appropriate wave for this round
+        Wave currentWave = waves[Mathf.Min(currentRound, waves.Length)];
 
-        while (enemiesToSpawn > 0) {
-            // Spawn an enemy.
-            SpawnEnemy();
-            enemiesToSpawn -= 1;
-            // Wait for spawn rate.
-            yield return new WaitForSeconds(spawnRate);
+        // Spawn enemies from the wave's configuration
+        foreach (var enemyWave in currentWave.enemyWaves) {
+            // Wait for spawn delay.
+            yield return new WaitForSeconds(enemyWave.spawnDelay);
+            // Pick the spawn point.
+            Transform spawnPoint = enemySpawnPointMap[enemyWave.spawnPointID];
+            // Spawn enemy at the designated spawn point.
+            SpawnEnemy(enemyWave.enemyPrefab, spawnPoint);
         }
     }
 
-    void SpawnEnemy() {
+    void SpawnEnemy(GameObject enemy, Transform origin) {
         // Pick a random spawn point.
-        int randomIndex = Random.Range(0, enemySpawnPoints.Length);
-        Transform randomSpawn = enemySpawnPoints[randomIndex];
         Vector3 offset = new(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), 0);
-        randomSpawn.position += offset;
+        Vector3 newPosition = origin.position + offset;
         // Create the new enemy.
-        GameObject newEnemy = Instantiate(enemyPrefab, randomSpawn.position, randomSpawn.rotation);
+        GameObject newEnemy = Instantiate(enemy, newPosition, origin.rotation);
         enemies.Add(newEnemy);
     }
 
