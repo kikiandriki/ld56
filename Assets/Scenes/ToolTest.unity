@@ -1227,6 +1227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2023637429}
   - component: {fileID: 2023637430}
+  - component: {fileID: 2023637431}
   m_Layer: 0
   m_Name: GameController
   m_TagString: GameController
@@ -1256,7 +1257,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2023637428}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce1d4d3e160ec0e4288ee6e0d783cedc, type: 3}
   m_Name: 
@@ -1288,6 +1289,32 @@ MonoBehaviour:
   - {fileID: 941022488}
   - {fileID: 568050598}
   - {fileID: 1837660340}
+  timeBetweenRounds: 10
+  numberOfRounds: 0
+  roundActive: 0
+  autoEndRound: 1
+--- !u!114 &2023637431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023637428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 941205c58b3dc534f8b51654be1db9a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoStartGame: 1
+  waves:
+  - {fileID: 11400000, guid: f38ff3e8b87bbaa4e80ba38ec8cca042, type: 2}
+  spawnPoints:
+  - {fileID: 1769152308}
+  - {fileID: 500541902}
+  - {fileID: 399296866}
+  - {fileID: 157017307}
+  - {fileID: 791379748}
+  turretPlacePoints: []
   timeBetweenRounds: 10
   numberOfRounds: 0
   roundActive: 0
