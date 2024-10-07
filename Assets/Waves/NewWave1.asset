@@ -13,9 +13,21 @@ MonoBehaviour:
   m_Name: NewWave1
   m_EditorClassIdentifier: 
   enemyWaves:
-  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+  - enemyPrefab: {fileID: 548639906743090273, guid: 5fc473221973c884a9bf41713acc002f, type: 3}
     spawnPointID: 0
     spawnDelay: 0
-  - enemyPrefab: {fileID: 548639906743090273, guid: f484ffd3e588bd44b87e5b77b7ba5a75, type: 3}
+  - enemyPrefab: {fileID: 548639906743090273, guid: 5fc473221973c884a9bf41713acc002f, type: 3}
     spawnPointID: 1
+    spawnDelay: 2
+  - enemyPrefab: {fileID: 548639906743090273, guid: d24920882c32fc147a501eb8e8a0f89b, type: 3}
+    spawnPointID: 2
+    spawnDelay: 2
+  - enemyPrefab: {fileID: 548639906743090273, guid: 5fc473221973c884a9bf41713acc002f, type: 3}
+    spawnPointID: 0
+    spawnDelay: 2
+  - enemyPrefab: {fileID: 548639906743090273, guid: d24920882c32fc147a501eb8e8a0f89b, type: 3}
+    spawnPointID: 2
+    spawnDelay: 2
+  - enemyPrefab: {fileID: 548639906743090273, guid: 5fc473221973c884a9bf41713acc002f, type: 3}
+    spawnPointID: 2
     spawnDelay: 1
