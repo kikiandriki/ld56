@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class TurretBehavior : MonoBehaviour, IDamageable {
@@ -11,10 +12,6 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
     private int hitPoints = 20;
 
     [Header("Attacking")]
-    [ReadOnly]
-    [SerializeField]
-    [Tooltip("Should this turret be looking for targets.")]
-    private bool shouldAttack = true;
     [SerializeField]
     [Tooltip("Attack range.")]
     private float attackRange = 2f;
@@ -26,11 +23,18 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
     private float attackSpeed = 1f;
     [ReadOnly]
     [SerializeField]
+    [Tooltip("Whether or not this entity can attack.")]
+    private bool canAttack = true;
+    [ReadOnly]
+    [SerializeField]
     [Tooltip("The target that this enemy is attacking.")]
     private IDamageable attackTarget;
     [SerializeField]
-    [Tooltip("Layers to ignore when checking for attacks.")]
-    private LayerMask ignoreLayer;
+    [Tooltip("Layers to target when checking for attacks.")]
+    private LayerMask targetLayer;
+    [SerializeField]
+    [Tooltip("Projectile prefab to spawn when attacking.")]
+    private GameObject projectilePrefab;
 
     void Start() {
         nexus = GameObject.FindWithTag("Nexus").transform;
@@ -46,7 +50,6 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
     }
 
     public void Die() {
-        StopAttacking();
         StopAllCoroutines();
         GameController controller = GameObject.FindWithTag("GameController").GetComponent<GameController>();
         if (controller) {
@@ -54,51 +57,58 @@ public class TurretBehavior : MonoBehaviour, IDamageable {
         }
     }
 
-    public void StopAttacking() {
-        // Stop attacking.
-        attackTarget = null;
-        // Start looking for targets.
-        shouldAttack = true;
-    }
+    public void Attack(IDamageable target) {
+        // Check that we're in range and attack is not on cooldown.
+        MonoBehaviour dob = target as MonoBehaviour;
 
-    public void StartAttacking(IDamageable target) {
-        // Set the target.
-        attackTarget = target;
-        // Stop looking for new targets.
-        shouldAttack = false;
-        // Start attacking.
-        StartCoroutine(Attack());
-    }
+        Vector3 direction = (dob.transform.position - transform.position).normalized;
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, attackRange, targetLayer);
+        Debug.DrawRay(transform.position, direction * attackRange, Color.yellow);
 
-    IEnumerator Attack() {
-        // As long as we have a target...
-        while (attackTarget != null && !attackTarget.Equals(null)) {
-            Debug.Log("Turret Target" + attackTarget);
-            // Deal damage.
-            attackTarget.TakeDamage(attackDamage);
-            // Wait for attack speed cooldown.
-            yield return new WaitForSeconds(attackSpeed);
+        if (canAttack && hit.collider && dob.gameObject.Equals(hit.collider.gameObject)) {
+
+            // Spawn a projectile that will deal damage once it hits the target.
+            ProjectileBehavior projectile = Instantiate(projectilePrefab, transform.position, transform.rotation).GetComponent<ProjectileBehavior>();
+            projectile.target = dob.transform;
+            projectile.OnHitCallback = () => {
+                target.TakeDamage(attackDamage);
+            };
+
+            // Start attack cooldown.
+            StartCoroutine(AttackCooldown());
         }
-        // Otherwise... look for targets.
-        shouldAttack = true;
+    }
+
+    IEnumerator AttackCooldown() {
+        canAttack = false;
+        yield return new WaitForSeconds(attackSpeed);
+        canAttack = true;
+    }
+
+    void DrawDebugCircle(Vector3 center, float radius, Color color) {
+        int segments = 40; // Higher values make a smoother circle
+        float angleStep = 360f / segments;
+
+        for (int i = 0; i <= segments; i++) {
+            float angle = i * angleStep * Mathf.Deg2Rad;
+            float nextAngle = (i + 1) * angleStep * Mathf.Deg2Rad;
+
+            Vector3 pointA = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius + center;
+            Vector3 pointB = new Vector3(Mathf.Cos(nextAngle), Mathf.Sin(nextAngle), 0) * radius + center;
+
+            Debug.DrawLine(pointA, pointB, color);
+        }
     }
 
     void Update() {
-        // If we should be looking for new targets...
-        if (shouldAttack) {
-            // Calculate the direction opposite the nexus.
-            Vector3 direction = (nexus.position - transform.position).normalized * -1;
-            // Cast a ray to determine if anything is in attack range.
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, attackRange, ~ignoreLayer);
-            Debug.DrawRay(transform.position, direction * attackRange, Color.blue);
-            // If something is in our range...
-            if (hit.collider != null) {
-                Debug.Log("Turret Hit: " + hit.collider.name);
-                // If the target is damageable...
-                if (hit.collider.TryGetComponent<IDamageable>(out var damageable)) {
-                    // Start attacking.
-                    StartAttacking(damageable);
-                }
+        DrawDebugCircle(transform.position, attackRange, Color.red);
+
+        // If there is a target in attack range.
+        if (Physics2D.OverlapCircle(transform.position, attackRange, targetLayer) is Collider2D targetInAttackRange) {
+            // If the target is damageable.
+            if (targetInAttackRange.GetComponent<IDamageable>() is IDamageable damageable) {
+                // Attack the target.
+                Attack(damageable);
             }
         }
     }

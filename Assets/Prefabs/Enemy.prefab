@@ -99,14 +99,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c17cdb4b6cd5d2047b48199eaf947245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentState: IDLE
   moveTarget: {fileID: 0}
   moveSpeed: 2
-  hitPoints: 1000
+  hitPoints: 100
   visionRange: 4
   attackRange: 0.7
-  attackDamage: 2000
-  attackSpeed: 0.1
+  attackDamage: 10
+  attackSpeed: 1
   canAttack: 1
   targetLayer:
     serializedVersion: 2

@@ -36,10 +36,6 @@ public class EnemyBehavior : MonoBehaviour, IDamageable {
     [SerializeField]
     [Tooltip("Whether or not this entity can attack.")]
     private bool canAttack = true;
-    [ReadOnly]
-    [SerializeField]
-    [Tooltip("The target that this enemy is attacking.")]
-    private IDamageable attackTarget;
     [SerializeField]
     [Tooltip("Layers to target when checking for attacks.")]
     private LayerMask targetLayer;
